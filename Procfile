@@ -1,1 +1,1 @@
-worker: python Youtube-First-Comment-Bot/Bot/bot.py
+web: python Youtube-First-Comment-Bot/Bot/bot.py
