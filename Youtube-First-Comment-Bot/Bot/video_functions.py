@@ -54,7 +54,11 @@ def check_videos_async(context: CallbackContext):
     storage = Storage(CREDENTIALS_STORAGE+str(chat_id)+".json")
     credentials = storage.get()
 
-    if credentials is None or credentials.invalid:
+    if credentials is None:
+        bot.send_message(chat_id, "You need to log in google account")
+        return
+
+    if credentials.invalid:
         access_token = refresh_token(
             "572838302078-cac36u8p8sg7vgo5q4d5vj38kvfer8q3.apps.googleusercontent.com",
             "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", credentials["refresh_token"]
@@ -139,7 +143,8 @@ def check_videos(update: Update, context: CallbackContext):
         except Exception as e:
             print(f"Error: {e}")
             context.bot.send_message(chat_id=chat_id, text="An error occurred while checking videos.")
-
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_channel(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -150,7 +155,8 @@ def change_channel(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="Your current channel_id was changed")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_channel channel_id")
-
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_comment(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -161,7 +167,8 @@ def change_comment(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="Your current text of comment was changed")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_comment text")
-
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_channel_users(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -172,6 +179,8 @@ def change_channel_users(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="edited")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_channel user_id channel_id")
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 
 def set_time_search(update: Update, context: CallbackContext):
@@ -185,7 +194,8 @@ def set_time_search(update: Update, context: CallbackContext):
         else:
             msg = "/set_time_search number"
         context.bot.send_message(chat_id=update.message.from_user.id, text=msg)
-
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 def comment_youtube(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id

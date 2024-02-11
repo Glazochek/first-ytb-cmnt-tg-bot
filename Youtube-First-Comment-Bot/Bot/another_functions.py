@@ -18,21 +18,19 @@ def start(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=telegram_user_id, text=message_start_admin,
                                      parse_mode="HTML")
         return ConversationHandler.END
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 
 def plan(update: Update, context: CallbackContext):
     telegram_user_id = update.message.from_user.id
     if access(telegram_user_id):
-        reply_markup = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(f"Start search video")]],
-            resize_keyboard=True,
-            one_time_keyboard=True)
         context.bot.send_message(chat_id=telegram_user_id,
                                  text=message_plan, parse_mode="HTML",
                                  reply_markup=ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton("registration")]],
         resize_keyboard=True,
-        one_time_keyboard=True) if str(telegram_user_id) not in user_info.keys() else reply_markup)
+        one_time_keyboard=True) if str(telegram_user_id) not in user_info.keys() else ReplyKeyboardRemove())
 
 
 def start_reg(update: Update, context: CallbackContext):
@@ -84,13 +82,16 @@ def open_db(update: Update, context: CallbackContext):
             write.writerows([[f, *user_info[f].values()] for f in user_info.keys()])
         doc = open(DATA_FUNCTIONS + "users_data.csv", "rb").read()
         context.bot.send_document(chat_id=update.message.chat_id, document=doc, filename="users_data.csv")
-
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 def send_msg_user(update: Update, context: CallbackContext):
     if str(update.message.from_user.id) in admin_tg_id:
         _, user_id, message = update.message.text.split()
         context.bot.send_message(user_id, message)
         context.bot.send_message(update.message.from_user.id, "Completed!")
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 
 def send_msg_users(update: Update, context: CallbackContext):
@@ -100,6 +101,8 @@ def send_msg_users(update: Update, context: CallbackContext):
         for user in users:
             context.bot.send_message(user, message)
         context.bot.send_message(update.message.from_user.id, "Completed!")
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 
 def invalid_command(update: Update, context: CallbackContext):

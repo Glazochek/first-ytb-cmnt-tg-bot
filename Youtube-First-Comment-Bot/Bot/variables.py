@@ -5,8 +5,6 @@ import requests
 import csv
 import json
 
-from flask import Flask, session, abort, redirect, request
-from common import cache
 from pathlib import Path
 from waitress import serve
 from multiprocessing import Process
@@ -93,21 +91,18 @@ flow = OAuth2WebServerFlow(
     prompt='consent'
 )
 
-message_start = f"""
-<b>Welcome!</b>
-This bot notifies you about new uploads on YouTube channels or playlists.
+message_start = ("<b>Welcome!</b>"
+"\nThis bot notifies you about new uploads on YouTube channels or playlists."
+"\n\nChecking for new videos:"
+"\n<i>/check_videos</i>"
+f"\n\nSetting of searching:"
+f" \n<i>/change_comment text</i>"
+f" \n{'<i>/change_channel channel_id</i>' if plan_info['name'] in ['Medium', 'Premium'] else ''}"
+f" \n{'<i>/log_out</i>' if plan_info['name'] in ['Medium', 'Premium'] else ''}"
+"\n\nTokens:"
+" \n<i>/my_tokens</i>")
 
-Checking for new videos:
- <i>/check_videos</i>
-
-Setting of searching:
- <i>/change_comment text</i>
- {'<i>/change_channel channel_id</i>' if plan_info["name"] in ["Medium", "Premium"] else ''}
- {'<i>/log_out</i>' if plan_info["name"] in ["Medium", "Premium"] else ''}
-
-Tokens:
- <i>/my_tokens</i>
-"""
+no_access_txt = "You have no access!"
 
 message_start_admin = """
 Admin commands:
@@ -125,12 +120,12 @@ Admin commands:
 # {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
 #   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",
 #   "client_secret": "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",
-#   "admin_chat_id": "1977988206",
+#   "admin_chat_id": "747278740",
 #   "plan": {
-#     "name": "Medium",
-#     "text_plan": "Your plan: MEDIUM 🧩\n\n✅️ Choose youtube channels\n✅️️ Several accounts and logout\n✅️️ change a comment\n✅️ Use video checking function 5 times"
+#     "name": "Basic",
+#     "text_plan": "Your plan: BASIC 🪨 \n\n✖️ Choose youtube channels \n✖️Several accounts and logout \n✅️ change a comment text \n✅️ Use video checking function 5 times"
 #   }
-# },
+# }
 #
 # {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
 #   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",
