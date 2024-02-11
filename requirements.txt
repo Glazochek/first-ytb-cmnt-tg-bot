@@ -35,6 +35,8 @@ telegram==0.0.1
 tornado==6.4
 tzlocal==5.2
 uritemplate==4.1.1
-urllib3==2.1.0
+urllib3==1.26.8
 waitress==2.1.2
 Werkzeug==3.0.1
+beautifulsoup4==4.10.0
+
