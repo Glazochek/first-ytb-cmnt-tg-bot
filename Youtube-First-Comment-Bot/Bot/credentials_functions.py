@@ -1,8 +1,12 @@
-from .variables import *
+from variables import *
 
 
 def put_credentials(user_id, cred):
-    storage = Storage(CREDENTIALS_STORAGE+f"{user_id}.json")
+    filename = CREDENTIALS_STORAGE+f"{user_id}.json"
+    if not os.path.exists(filename):
+        f = open(filename, 'a')
+        f.close()
+    storage = Storage(filename)
     storage.put(cred)
 
 

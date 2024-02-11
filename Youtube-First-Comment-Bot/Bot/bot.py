@@ -1,37 +1,45 @@
-from functions.variables import *
-from functions.another_functions import *
-from functions.access_functions import *
-from functions.tokens_functions import *
-from functions.video_functions import *
-
+from variables import *
+from another_functions import *
+from access_functions import access_to
+from tokens_functions import *
+from video_functions import *
+from auth_functions import *
 
 
 def main():
     updater = Updater(token, use_context=True)
     dp = updater.dispatcher
 
+    all_commands = [CommandHandler("start", start), CommandHandler("authentication", tutorial_auth),
+                    CommandHandler("log_out", log_out),
+                    CommandHandler("check_videos", search_warning), CommandHandler("add_tokens", add_tokens),
+                    CommandHandler("my_tokens", my_tokens), CommandHandler("see_users", open_db),
+                    CommandHandler("change_channel", change_channel), CommandHandler("change_comment", change_comment),
+                    CommandHandler("change_user_channel", change_channel_users), CommandHandler("send_msg_users", send_msg_users),
+                    CommandHandler("send_msg_user", send_msg_user), CommandHandler("set_time_search", set_time_search),
+                    CommandHandler("access_to", access_to),
+                    MessageHandler(filters.Filters.command, invalid_command)]
+
     conv_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Filters.text("registration"), start_reg)],
         states={
             CHECK_VIDEOS: [MessageHandler(filters.Filters.text & ~filters.Filters.command, get_playlist_id)],
             COMMENT_YOUTUBE: [MessageHandler(filters.Filters.text & ~filters.Filters.command, comment_youtube)],
+            CHECK_AUTH: [MessageHandler(filters.Filters.text & ~filters.Filters.command, check_auth)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)],
+        fallbacks=[all_commands[0]],
     )
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("authentication", tutorial_auth))
-    dp.add_handler(CommandHandler("checkvideos", check_videos))
-    dp.add_handler(CommandHandler("add_tokens", add_tokens))
-    dp.add_handler(CommandHandler("my_tokens", my_tokens))
-    dp.add_handler(CommandHandler("open_access", open_access))
-    dp.add_handler(CommandHandler("see_users", open_db))
+    for command in all_commands:
+        dp.add_handler(command)
+
+    dp.add_handler(CallbackQueryHandler(tutorial_auth, pattern="url"))
+    dp.add_handler(CallbackQueryHandler(check_auth, pattern="check_auth"))
+    dp.add_handler(CallbackQueryHandler(search_warning, pattern="Yes|No"))
 
     dp.add_handler(MessageHandler(filters.Filters.text("See my plan"), plan))
-    dp.add_handler(MessageHandler(filters.Filters.text(
-        [f"Start search video ({i})" for i in range(1, 6)]+["Start search video ({♾️})"]
-    ), check_videos))
-    dp.add_handler(CallbackQueryHandler(tutorial_auth, pattern="url"))
+    dp.add_handler(MessageHandler(filters.Filters.text(["Start search video", "Cycle again"]), search_warning))
+    dp.add_handler(MessageHandler(filters.Filters.text(["Stop"]), stop_searching))
 
     dp.add_handler(conv_handler)
 
@@ -42,7 +50,4 @@ def main():
 
 
 if __name__ == '__main__':
-    p1 = Process(target=main)
-    p1.start()
-    p2 = Process(target=serve(app, host="localhost", port=5000))
-    p2.start()
+    main()
