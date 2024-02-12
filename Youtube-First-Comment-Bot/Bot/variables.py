@@ -1,17 +1,13 @@
 import telegram
 import os
-import pathlib
 import requests
 import csv
 import json
 
-from flask import Flask, session, abort, redirect, request
-from common import cache
-from pathlib import Path
+# from pathlib import Path
 from waitress import serve
 from multiprocessing import Process
 
-# from apiclient.discovery import build_from_document
 from builtins import FileNotFoundError
 from pip._vendor import cachecontrol
 
@@ -52,22 +48,13 @@ USER_INFO = f"{ROOT_DIR}/Data/data_functions/user_info.json"
 with open(ROOT_DIR+"/bot_config.json", "r") as conf:
     bot_config = json.load(conf)
     plan_info = bot_config["plan"]
-    admin_tg_id = bot_config["admin_chat_id"]
+    admin_tg_id = bot_config["admin_chat_id"].split("|")
     token = bot_config["token"]
     client_id = bot_config["client_id"]
     client_secret = bot_config["client_secret"]
     message_plan = plan_info["text_plan"]
 
-# intervel = 5
-# time_of_search = 30
-
 ytb = None
-# telegram_user_id = None
-
-# app = Flask(__name__)
-# app.secret_key = "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"
-# os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-# cache.init_app(app=app, config={"CACHE_TYPE": "filesystem",'CACHE_DIR': Path('/tmp')})
 
 bot = telegram.Bot(token)
 
@@ -78,8 +65,6 @@ try:
         user_info = json.load(file)
 except:
     user_info = {}
-
-list_of_ids = list(user_info.keys())+[admin_tg_id]
 
 
 host = "https://upcmts.com/callback"
@@ -93,21 +78,22 @@ flow = OAuth2WebServerFlow(
     prompt='consent'
 )
 
-message_start = f"""
-<b>Welcome!</b>
-This bot notifies you about new uploads on YouTube channels or playlists.
 
-Checking for new videos:
- <i>/check_videos</i>
+message_start = ("<b>Welcome!</b>"
+"\nThis bot notifies you about new uploads on YouTube channels or playlists. "
+"Press 'registration' button to start use bot or 'See my plan' to see plan. Near you can see commands of this bot:"
+"\n\nChecking for new videos:"
+"\n<i>/check_videos</i>"
+f"\n\nSettings of searching:"
+f" \n<i>/change_comment text</i>"
+f" \n{'<i>/change_channel channel_id</i>' if plan_info['name'] in ['Medium', 'Premium'] else ''}"
+f"\n\nSettings of account:"                 
+f" \n{f'<i>/authentication</i>' if plan_info['name'] in ['Medium', 'Premium'] else ''}"
+f" \n{f'<i>/log_out</i>' if plan_info['name'] in ['Medium', 'Premium'] else ''}"
+"\n\nTokens (attempts of searching):"
+" \n<i>/my_tokens</i>")
 
-Setting of searching:
- <i>/change_comment text</i>
- {'<i>/change_channel channel_id</i>' if plan_info["name"] in ["Medium", "Premium"] else ''}
- {'<i>/log_out</i>' if plan_info["name"] in ["Medium", "Premium"] else ''}
-
-Tokens:
- <i>/my_tokens</i>
-"""
+no_access_txt = "You have no access!"
 
 message_start_admin = """
 Admin commands:
@@ -118,6 +104,7 @@ Admin commands:
  <i>/send_msg_user user_id message</i>
  <i>/send_msg_users message</i>
  <i>/set_time_search seconds</i>
+ <i>/delete_user user_id</i>
 """
 
 
@@ -125,12 +112,12 @@ Admin commands:
 # {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
 #   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",
 #   "client_secret": "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",
-#   "admin_chat_id": "1977988206",
+#   "admin_chat_id": "747278740",
 #   "plan": {
-#     "name": "Medium",
-#     "text_plan": "Your plan: MEDIUM 🧩\n\n✅️ Choose youtube channels\n✅️️ Several accounts and logout\n✅️️ change a comment\n✅️ Use video checking function 5 times"
+#     "name": "Basic",
+#     "text_plan": "Your plan: BASIC 🪨 \n\n✖️ Choose youtube channels \n✖️Several accounts and logout \n✅️ change a comment text \n✅️ Use video checking function 5 times"
 #   }
-# },
+# }
 #
 # {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
 #   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",

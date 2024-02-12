@@ -2,9 +2,9 @@ from variables import *
 from access_functions import access
 
 
-def save(var, FILE):
-    with open(FILE, "w") as file:
-        json.dump(var, file)
+def save(var, file):
+    with open(file, "w") as f:
+        json.dump(var, f)
 
 
 def manage_tokens(user_id, change=None):
@@ -19,10 +19,13 @@ def manage_tokens(user_id, change=None):
 
 def my_tokens(update: Update, context: CallbackContext):
     if access(update.message.from_user.id):
-        manage_user_info(str(update.message.from_user.id))
-        current_tokens = user_info[str(update.message.from_user.id)]["tokens"]
-        message = f"You have {current_tokens} {'token' if current_tokens < 2 else 'tokens'}"
-        context.bot.send_message(chat_id=update.message.chat_id, text=message)
+        if f"{update.message.from_user.id}.json" in os.listdir(CREDENTIALS_STORAGE):
+            manage_user_info(str(update.message.from_user.id))
+            current_tokens = user_info[str(update.message.from_user.id)]["tokens"]
+            message = f"You have {current_tokens} {'token' if current_tokens < 2 else 'tokens'}"
+            context.bot.send_message(chat_id=update.message.chat_id, text=message)
+        else:
+            context.bot.send_message(chat_id=update.message.chat_id, text="You should log in!")
 
 
 def add_tokens(update: Update, context: CallbackContext):
@@ -41,6 +44,7 @@ def create_user_info(user_id):
         user_info[str(user_id)] = {"playlist_id": "None", "comment": "None", "tokens": 1000}
     else:
         user_info[str(user_id)] = {"playlist_id": "None", "comment": "None", "tokens": 5}
+    save(user_info, USER_INFO)
 
 
 def manage_user_info(user_id, channel_id=None, comnt=None):

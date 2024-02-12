@@ -1,9 +1,10 @@
 from variables import *
 from another_functions import *
-from access_functions import access_to
-from tokens_functions import *
+from access_functions import access_to, delete_user
+from tokens_functions import add_tokens, my_tokens
 from video_functions import *
 from auth_functions import *
+
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
                     CommandHandler("change_channel", change_channel), CommandHandler("change_comment", change_comment),
                     CommandHandler("change_user_channel", change_channel_users), CommandHandler("send_msg_users", send_msg_users),
                     CommandHandler("send_msg_user", send_msg_user), CommandHandler("set_time_search", set_time_search),
-                    CommandHandler("access_to", access_to),
+                    CommandHandler("access_to", access_to), CommandHandler("delete_user", delete_user),
                     MessageHandler(filters.Filters.command, invalid_command)]
 
     conv_handler = ConversationHandler(

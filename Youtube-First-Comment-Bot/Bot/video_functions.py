@@ -54,7 +54,11 @@ def check_videos_async(context: CallbackContext):
     storage = Storage(CREDENTIALS_STORAGE+str(chat_id)+".json")
     credentials = storage.get()
 
-    if credentials is None or credentials.invalid:
+    if credentials is None:
+        bot.send_message(chat_id, "You need to log in google account")
+        return
+
+    if credentials.invalid:
         access_token = refresh_token(
             "572838302078-cac36u8p8sg7vgo5q4d5vj38kvfer8q3.apps.googleusercontent.com",
             "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", credentials["refresh_token"]
@@ -112,7 +116,7 @@ def check_videos_async(context: CallbackContext):
     else:
         context.bot.send_message(chat_id=chat_id, text="No current video ID found.",
                                  reply_markup=ReplyKeyboardMarkup(
-    keyboard=[[KeyboardButton("Cycle again")]],
+    keyboard=[[KeyboardButton("Cycle again"), KeyboardButton("/start")]],
     resize_keyboard=True,
     one_time_keyboard=True))
 
@@ -120,6 +124,11 @@ def check_videos_async(context: CallbackContext):
 def check_videos(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     if access(str(chat_id)):
+        if f"{chat_id}.json" not in os.listdir(CREDENTIALS_STORAGE):
+            remaining_tokens = manage_tokens(chat_id, -1)
+            context.bot.send_message(chat_id=chat_id, text=f"You have {remaining_tokens} tokens.")
+            context.bot.send_message(chat_id=chat_id, text=f"You should be log in!")
+            return
         playlist_id = user_info[str(chat_id)]["playlist_id"]
         try:
             if access(chat_id):
@@ -139,29 +148,34 @@ def check_videos(update: Update, context: CallbackContext):
         except Exception as e:
             print(f"Error: {e}")
             context.bot.send_message(chat_id=chat_id, text="An error occurred while checking videos.")
-
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_channel(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     if access(str(chat_id)):
-        if len(update.message.text.split()) == 2:
-            data = update.message.text.split()
-            user_info[str(chat_id)]["playlist_id"] = data[2]
-            context.bot.send_message(chat_id=chat_id, text="Your current channel_id was changed")
-        else:
-            context.bot.send_message(chat_id=chat_id, text="/change_channel channel_id")
-
+        if user_info[str(chat_id)]["playlist_id"] != "None":
+            if len(update.message.text.split()) == 2:
+                data = update.message.text.split()
+                user_info[str(chat_id)]["playlist_id"] = data[2]
+                context.bot.send_message(chat_id=chat_id, text="Your current channel_id was changed")
+            else:
+                context.bot.send_message(chat_id=chat_id, text="/change_channel channel_id")
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_comment(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    if access(str(chat_id)) and plan_info["name"] in ["Basic", "Premium"]:
+    if (access(str(chat_id)) and plan_info["name"] in ["Basic", "Premium"] and
+            user_info[str(chat_id)]["comment"] != "None"):
         if len(update.message.text.split()) == 2:
             data = update.message.text.split()
             user_info[str(chat_id)]["comment"] = data[2]
             context.bot.send_message(chat_id=chat_id, text="Your current text of comment was changed")
-        else:
-            context.bot.send_message(chat_id=chat_id, text="/change_comment text")
-
+        # else:
+        #     context.bot.send_message(chat_id=chat_id, text="/change_comment text")
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 def change_channel_users(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -172,6 +186,8 @@ def change_channel_users(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=chat_id, text="edited")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_channel user_id channel_id")
+    else:
+        bot.send_message(chat_id, no_access_txt)
 
 
 def set_time_search(update: Update, context: CallbackContext):
@@ -185,7 +201,8 @@ def set_time_search(update: Update, context: CallbackContext):
         else:
             msg = "/set_time_search number"
         context.bot.send_message(chat_id=update.message.from_user.id, text=msg)
-
+    else:
+        bot.send_message(update.message.from_user.id, no_access_txt)
 
 def comment_youtube(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id

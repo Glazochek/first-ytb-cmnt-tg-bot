@@ -1,6 +1,5 @@
 from variables import *
 from credentials_functions import *
-from bs4 import BeautifulSoup
 from oauth2client.client import FlowExchangeError
 from access_functions import access
 
@@ -73,7 +72,9 @@ def check_auth(update: Update, context: CallbackContext):
 
 def log_out(update: Update, context: CallbackContext):
     telegram_user_id = update.message.from_user.id
-    if access(telegram_user_id) and plan_info["name"] in ["Medium", "Premium"]:
+    if (access(telegram_user_id) and
+        f"{update.message.from_user.id}.json" in os.listdir(CREDENTIALS_STORAGE) and
+        plan_info["name"] in ["Medium", "Premium"]):
         file_path = CREDENTIALS_STORAGE+str(update.message.from_user.id)+".json"
         if os.path.exists(file_path):
             os.remove(file_path)
