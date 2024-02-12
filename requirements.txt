@@ -7,8 +7,6 @@ certifi==2023.11.17
 charset-normalizer==3.3.2
 click==8.1.7
 config==0.5.1
-Flask==3.0.1
-Flask-Caching==2.1.0
 google-api-core==2.15.0
 google-api-python-client==2.115.0
 google-auth==2.26.2
@@ -36,6 +34,5 @@ telegram==0.0.1
 tornado==6.4
 tzlocal==5.2
 uritemplate==4.1.1
-urllib3==2.1.0
 waitress==2.1.2
 Werkzeug==3.0.1
