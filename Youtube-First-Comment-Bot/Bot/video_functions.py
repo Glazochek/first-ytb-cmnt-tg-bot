@@ -191,11 +191,11 @@ def change_channel_users(update: Update, context: CallbackContext):
 
 
 def set_time_search(update: Update, context: CallbackContext):
-    if str(update.message.from_user.id) in admin_tg_id:
-        _, time = update.message.text.split()
-        if time.isalnum():
-            time_search = int(time)
-            with open(ROOT_DIR + "/Data/data_functions/time_search/", "w") as f:
+    if str(update.message.from_user.id) in admin_tg_id and len(update.message.text.split())==2:
+        _, tm = update.message.text.split()
+        if tm.isalnum():
+            time_search = int(tm)
+            with open(ROOT_DIR + "/Data/data_functions/time_search", "w") as f:
                 f.write(str(time_search))
             msg = f"Now default attempts of search is {time_search}"
         else:
@@ -203,6 +203,7 @@ def set_time_search(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.message.from_user.id, text=msg)
     else:
         bot.send_message(update.message.from_user.id, no_access_txt)
+
 
 def comment_youtube(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
