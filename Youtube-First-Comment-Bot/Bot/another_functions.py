@@ -28,9 +28,9 @@ def plan(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=telegram_user_id,
                                  text=message_plan, parse_mode="HTML",
                                  reply_markup=ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton("registration")]],
-        resize_keyboard=True,
-        one_time_keyboard=True))
+                                     keyboard=[[KeyboardButton("registration")]],
+                                     resize_keyboard=True,
+                                     one_time_keyboard=True))
 
 
 def start_reg(update: Update, context: CallbackContext):
@@ -46,7 +46,8 @@ def start_reg(update: Update, context: CallbackContext):
                     bot.send_message(telegram_user_id, message)
                     return ConversationHandler.END
         create_user_info(telegram_user_id)
-        context.bot.send_message(chat_id=update.message.chat_id, text="Write channel_id", reply_markup=ReplyKeyboardRemove())
+        context.bot.send_message(chat_id=update.message.chat_id, text="Write channel_id",
+                                 reply_markup=ReplyKeyboardRemove())
         return CHECK_VIDEOS
 
 
@@ -62,6 +63,7 @@ def open_db(update: Update, context: CallbackContext):
         doc.close()
     else:
         bot.send_message(update.message.from_user.id, no_access_txt)
+
 
 def send_msg_user(update: Update, context: CallbackContext):
     if str(update.message.from_user.id) in admin_tg_id:
@@ -93,6 +95,3 @@ def invalid_command(update: Update, context: CallbackContext):
         update.message.reply_text(
             f"Invalid command '{update.message.text}'", reply_markup=ReplyKeyboardRemove()
         )
-
-
-
