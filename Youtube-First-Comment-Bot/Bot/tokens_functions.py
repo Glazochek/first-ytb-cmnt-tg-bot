@@ -13,8 +13,8 @@ def manage_tokens(user_id, change=None):
             user_info[str(user_id)]["tokens"] += change
             if user_info[str(user_id)]["tokens"] < 0:
                 user_info[str(user_id)]["tokens"] = 0
-    save(user_info, USER_INFO)
-    return user_info[str(user_id)]["tokens"]
+            save(user_info, USER_INFO)
+            return user_info[str(user_id)]["tokens"]
 
 
 def my_tokens(update: Update, context: CallbackContext):

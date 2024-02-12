@@ -195,7 +195,7 @@ def set_time_search(update: Update, context: CallbackContext):
         _, time = update.message.text.split()
         if time.isalnum():
             time_search = int(time)
-            with open(ROOT_DIR + "Data/data_functions/time_search", "w") as f:
+            with open(ROOT_DIR + "/Data/data_functions/time_search/", "w") as f:
                 f.write(str(time_search))
             msg = f"Now default attempts of search is {time_search}"
         else:
