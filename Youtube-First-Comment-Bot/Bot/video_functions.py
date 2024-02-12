@@ -151,17 +151,20 @@ def check_videos(update: Update, context: CallbackContext):
     else:
         bot.send_message(chat_id, no_access_txt)
 
+
 def change_channel(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    if access(str(chat_id)) and plan_info["name"] in ["Medium", "Premium"] and user_info[str(chat_id)]["playlist_id"] != "None":
-        if len(update.message.text.split()) == 2:
-            data = update.message.text.split()
-            user_info[str(chat_id)]["playlist_id"] = data[2]
+    if (access(str(chat_id)) and plan_info["name"] in ["Medium", "Premium"] and
+            user_info[str(chat_id)]["playlist_id"] != "None"):
+        data = update.message.text.split()
+        if len(data) == 2:
+            user_info[str(chat_id)]["playlist_id"] = data[1]
             context.bot.send_message(chat_id=chat_id, text="Your current channel_id was changed")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_channel channel_id")
     else:
         bot.send_message(chat_id, no_access_txt)
+
 
 def change_comment(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
@@ -169,12 +172,13 @@ def change_comment(update: Update, context: CallbackContext):
             user_info[str(chat_id)]["comment"] != "None"):
         if len(update.message.text.split()) >= 2:
             data = update.message.text.split()
-            user_info[str(chat_id)]["comment"] = data[1:]
+            user_info[str(chat_id)]["comment"] = "".join(data[1:])
             context.bot.send_message(chat_id=chat_id, text="Your current text of comment was changed")
         else:
             context.bot.send_message(chat_id=chat_id, text="/change_comment text")
     else:
         bot.send_message(chat_id, no_access_txt)
+
 
 def change_channel_users(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
