@@ -79,8 +79,8 @@ def send_msg_user(update: Update, context: CallbackContext):
 def send_msg_users(update: Update, context: CallbackContext):
     if str(update.message.from_user.id) in admin_tg_id:
         data = update.message.text.split()
-        if len(data) >= 3:
-            user_id, message = data[1], " ".join(data[2:])
+        if len(data) >= 2:
+            message = " ".join(data[1:])
             users = user_info.keys()
             for user in users:
                 context.bot.send_message(user, message)
