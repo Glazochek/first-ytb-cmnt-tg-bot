@@ -4,7 +4,7 @@ import time
 import google
 
 from variables import *
-from another_functions import access
+from access_functions import access
 from tokens_functions import manage_tokens, manage_user_info
 from auth_functions import tutorial_auth
 from credentials_functions import refresh_token, get_credentials
@@ -248,8 +248,12 @@ def search_warning(update: Update, context: CallbackContext):
             if "Yes" in data:
                 check_videos(update, context)
             elif "No" in data:
-                context.bot.send_message(update.effective_chat.id, message_start,
-                                         reply_markup=ReplyKeyboardRemove(), parse_mode="HTML")
+                main_buttons = ReplyKeyboardMarkup(
+                    keyboard=[[KeyboardButton("See my plan"), KeyboardButton("registration")]],
+                    resize_keyboard=True,
+                    one_time_keyboard=True)
+                context.bot.send_message(chat_id=telegram_user_id, text=message_start,
+                                         parse_mode="HTML", reply_markup=main_buttons)
             context.bot.edit_message_reply_markup(update.effective_chat.id, message_delete.message_id)
 
 

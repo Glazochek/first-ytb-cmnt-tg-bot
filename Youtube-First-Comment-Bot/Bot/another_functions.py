@@ -17,7 +17,6 @@ def start(update: Update, context: CallbackContext):
         if str(telegram_user_id) in admin_tg_id:
             context.bot.send_message(chat_id=telegram_user_id, text=message_start_admin,
                                      parse_mode="HTML")
-        return ConversationHandler.END
     else:
         bot.send_message(update.message.from_user.id, no_access_txt)
 
@@ -88,6 +87,11 @@ def send_msg_users(update: Update, context: CallbackContext):
     else:
         bot.send_message(update.message.from_user.id, no_access_txt)
 
+
+def no_commands(update: Update, context: CallbackContext):
+    telegram_user_id = update.message.from_user.id
+    if access(telegram_user_id):
+        update.message.reply_text("You can't use commands now")
 
 def invalid_command(update: Update, context: CallbackContext):
     telegram_user_id = update.message.from_user.id
