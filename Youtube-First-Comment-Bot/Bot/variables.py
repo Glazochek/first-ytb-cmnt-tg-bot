@@ -22,6 +22,8 @@ from telegram.ext import (Updater, filters, CommandHandler, MessageHandler, Conv
                           CallbackQueryHandler, CallbackContext, JobQueue)
 from telegram import (KeyboardButton, InlineKeyboardButton, ReplyKeyboardRemove,
                       InputMediaPhoto, ReplyKeyboardMarkup, InlineKeyboardMarkup)
+from telegram.ext.dispatcher import run_async
+
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,8 +77,7 @@ flow = OAuth2WebServerFlow(
     scope=[YOUTUBE_READ_WRITE_SSL_SCOPE],
     redirect_uri=host,
     access_type='offline',
-    prompt='consent',
-    cache_discovery=False, 
+    prompt='consent'
 )
 
 

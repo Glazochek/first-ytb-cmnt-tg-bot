@@ -32,18 +32,18 @@ def main():
         fallbacks=[]
     )
 
-    dp.add_handler(conv_handler)
+    dp.add_handler(conv_handler, run_async=True)
 
-    dp.add_handler(CallbackQueryHandler(tutorial_auth, pattern="url"))
-    dp.add_handler(CallbackQueryHandler(check_auth, pattern="check_auth"))
-    dp.add_handler(CallbackQueryHandler(search_warning, pattern="Yes|No"))
+    dp.add_handler(CallbackQueryHandler(tutorial_auth, pattern="url"), run_async=True)
+    dp.add_handler(CallbackQueryHandler(check_auth, pattern="check_auth"), run_async=True)
+    dp.add_handler(CallbackQueryHandler(search_warning, pattern="Yes|No"), run_async=True)
 
-    dp.add_handler(MessageHandler(filters.Filters.text("See my plan"), plan))
-    dp.add_handler(MessageHandler(filters.Filters.text(["Start search video", "Cycle again"]), search_warning))
-    dp.add_handler(MessageHandler(filters.Filters.text(["Stop"]), stop_searching))
+    dp.add_handler(MessageHandler(filters.Filters.text("See my plan"), plan), run_async=True)
+    dp.add_handler(MessageHandler(filters.Filters.text(["Start search video", "Cycle again"]), search_warning), run_async=True)
+    dp.add_handler(MessageHandler(filters.Filters.text(["Stop"]), stop_searching), run_async=True)
 
     for command in all_commands:
-        dp.add_handler(command)
+        dp.add_handler(command, run_async=True)
 
 
     job_queue = updater.job_queue
