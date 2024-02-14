@@ -75,7 +75,8 @@ flow = OAuth2WebServerFlow(
     scope=[YOUTUBE_READ_WRITE_SSL_SCOPE],
     redirect_uri=host,
     access_type='offline',
-    prompt='consent'
+    prompt='consent',
+    cache_discovery=False, 
 )
 
 
