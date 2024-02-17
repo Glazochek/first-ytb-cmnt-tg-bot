@@ -8,11 +8,13 @@ def put_credentials(user_id, cred):
         f.close()
     storage = Storage(filename)
     storage.put(cred)
+    cred.token_cache = None
 
 
 def get_credentials(user_id):
     storage = Storage(CREDENTIALS_STORAGE + f"{user_id}.json")
     credentials = storage.get()
+    credentials.token_cache = None
     if credentials is None or credentials.invalid:
         return None
     return credentials
