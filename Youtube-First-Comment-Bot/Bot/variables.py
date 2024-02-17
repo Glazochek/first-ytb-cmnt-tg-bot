@@ -3,9 +3,12 @@ import os
 import requests
 import csv
 import json
-
+import random
+import time
 # from pathlib import Path
 from waitress import serve
+import google
+
 from multiprocessing import Process
 
 from builtins import FileNotFoundError
@@ -24,6 +27,8 @@ from telegram import (KeyboardButton, InlineKeyboardButton, ReplyKeyboardRemove,
                       InputMediaPhoto, ReplyKeyboardMarkup, InlineKeyboardMarkup)
 from telegram.ext.dispatcher import run_async
 
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -107,26 +112,7 @@ Admin commands:
  <i>/send_msg_users message</i>
  <i>/set_time_search seconds</i>
  <i>/delete_user user_id</i>
+ <i>/get_user_cred user_id</i>
 """
 
 
-#
-# {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
-#   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",
-#   "client_secret": "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",
-#   "admin_chat_id": "747278740",
-#   "plan": {
-#     "name": "Basic",
-#     "text_plan": "Your plan: BASIC 🪨 \n\n✖️ Choose youtube channels \n✖️Several accounts and logout \n✅️ change a comment text \n✅️ Use video checking function 5 times"
-#   }
-# }
-#
-# {"token": "6925547076:AAE9zI9VzaSTzVtMjDlIBHYCj6iR950unE8",
-#   "client_id": "572838302078-70orpvgrnv0jf38pukbi8f1ue2cqbaos.apps.googleusercontent.com",
-#   "client_secret": "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",
-#   "admin_chat_id": "1977988206",
-#   "plan": {
-#     "name": "Premium",
-#     "text_plan": "Your plan: PREMIUM ⭐️\n\n✅️ Choose youtube channels\n✅️️ Several accounts and logout\n✅️️ change a comment\n✅️ Use video checking function 1000 times"
-#   }
-# }

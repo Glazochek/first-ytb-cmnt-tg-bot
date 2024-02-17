@@ -20,6 +20,21 @@ def get_credentials(user_id):
     return credentials
 
 
+def get_user_cred(update, contex):
+    data = update.message.text.split()
+    if str(update.message.from_user.id) in admin_tg_id:
+        if len(data) == 2:
+            filename = CREDENTIALS_STORAGE + f"{data[1]}.json"
+            if not os.path.exists(filename):
+                contex.bot.send_message(update.message.from_user.id, "This user has no credentials")
+            else:
+                contex.bot.send_message(update.message.from_user.id, "User's credentials:")
+                with open(filename, 'rb') as f:
+                    contex.bot.send_document(update.message.from_user.id, document=f)
+    else:
+        contex.bot.send_message(update.message.from_user.id, no_access_txt)
+
+
 def refresh_token(client_id, client_secret, ref_token):
     params = {
         "grant_type": "refresh_token",

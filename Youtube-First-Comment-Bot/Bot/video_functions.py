@@ -1,9 +1,3 @@
-import random
-import time
-
-import google
-from googleapiclient.errors import HttpError
-
 from variables import *
 from access_functions import access
 from tokens_functions import manage_tokens, manage_user_info
@@ -11,7 +5,6 @@ from auth_functions import tutorial_auth
 from google.auth.transport.requests import Request
 from credentials_functions import refresh_token, get_credentials
 
-cycle_number = 5
 stop = False
 
 
@@ -48,28 +41,24 @@ def get_last_video_id(playlist_id):
 
 
 def check_videos_async(context: CallbackContext):
-    global ytb
     chat_id = context.job.context["chat_id"]
     try:
         comment = user_info[str(chat_id)]["comment"]
         playlist_id = user_info[str(chat_id)]["playlist_id"]
+        playlist_id = "UU"+playlist_id[2:]
 
         storage = Storage(CREDENTIALS_STORAGE+str(chat_id)+".json")
         credentials = storage.get()
+        context.bot.send_message(chat_id=chat_id, text=f"access_token: {credentials.access_token}")
 
         if credentials is None:
-            bot.send_message(chat_id, "You need to log in google account")
+            context.bot.send_message(chat_id, "You need to log in google account")
             return
 
         if credentials.invalid:
-            print("invalid crend")
             credentials.refresh(Request())
 
-        with open(
-                youtube_ssl_url,
-                "r") as f:
-            doc = f.read()
-            ytb = build_from_document(doc, credentials=credentials)
+        youtube = build("youtube", "v3", credentials=credentials)
 
         current_video = get_last_video_id(playlist_id)
         if current_video:
@@ -79,31 +68,22 @@ def check_videos_async(context: CallbackContext):
             with open(ROOT_DIR+"/Data/data_functions/time_search", "r") as f:
                 time_search = int(f.readline())
 
-            index_0 = random.randint(1, 6)
-            stop_btn = ReplyKeyboardMarkup(
-                keyboard=[[KeyboardButton("Stop")]],
-                resize_keyboard=True,
-                one_time_keyboard=True)
+            stop_btn = ReplyKeyboardMarkup(keyboard=[[KeyboardButton("Stop")]], resize_keyboard=True, one_time_keyboard=True)
 
             i = 0
             start = time.time()
+            context.bot.send_message(chat_id=chat_id, text=f"Waiting...", reply_markup=stop_btn)
             while 3*60 >= int(time.time() - start) and not stop:
-                if i == 0:
-                    context.bot.send_message(chat_id=chat_id, text=f"Waiting...", reply_markup=stop_btn)
-
                 new_video_id = get_last_video_id(playlist_id)
                 video_info = new_video_id.get("video_id")
 
                 i += 1
                 if video_info != current_video_id:
                     context.bot.send_message(chat_id=chat_id, text=f"New video detected! ID: {video_info}", reply_markup=ReplyKeyboardRemove())
-                    insert_comment(ytb, video_info, comment)
+                    insert_comment(youtube, video_info, comment)
                     context.bot.send_message(chat_id=chat_id, text=f"Comment wrote: {comment}")
                     break
-                if time_search != index_0:
-                    time.sleep(time_search)
-                else:
-                    time.sleep(2)
+                time.sleep(time_search)
                 if not stop:
                     context.bot.send_message(chat_id=chat_id, text=f"Cycle: {i}")
             else:

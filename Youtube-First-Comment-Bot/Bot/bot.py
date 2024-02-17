@@ -4,7 +4,7 @@ from access_functions import access_to, delete_user
 from tokens_functions import add_tokens, my_tokens
 from video_functions import *
 from auth_functions import *
-
+from credentials_functions import get_user_cred
 
 
 def main():
@@ -18,7 +18,8 @@ def main():
                     CommandHandler("change_channel", change_channel, run_async=True), CommandHandler("change_comment", change_comment, run_async=True),
                     CommandHandler("change_user_channel", change_channel_users, run_async=True), CommandHandler("send_msg_users", send_msg_users, run_async=True),
                     CommandHandler("send_msg_user", send_msg_user, run_async=True), CommandHandler("set_time_search", set_time_search, run_async=True),
-                    CommandHandler("access_to", access_to, run_async=True), CommandHandler("delete_user", delete_user, run_async=True),
+                    CommandHandler("get_user_cred", get_user_cred, run_async=True),CommandHandler("access_to", access_to, run_async=True),
+                    CommandHandler("delete_user", delete_user, run_async=True),
                     MessageHandler(filters.Filters.command, invalid_command, run_async=True)]
 
     conv_handler = ConversationHandler(
@@ -43,7 +44,6 @@ def main():
 
     for command in all_commands:
         dp.add_handler(command)
-
 
     job_queue = updater.job_queue
 
