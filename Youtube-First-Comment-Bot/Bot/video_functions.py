@@ -74,7 +74,6 @@ def check_videos_async(context: CallbackContext):
         current_video = get_last_video_id(playlist_id)
         if current_video:
             current_video_id = current_video["video_id"]
-            current_video_id = "-"
             context.bot.send_message(chat_id=chat_id, text=f"Last video ID: {current_video_id}")
 
             with open(ROOT_DIR+"/Data/data_functions/time_search", "r") as f:
